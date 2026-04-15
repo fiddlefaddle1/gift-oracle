@@ -254,7 +254,7 @@ export default function GiftOracle() {
         { role: "user", content: userMessage }
       ];
 
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -365,11 +365,11 @@ export default function GiftOracle() {
       animation: "fadeInUp 1s ease 0.3s both",
     },
     emptyPrompt: {
-      fontSize: "1rem",
+      fontSize: "1.2rem",
       color: "#6a5a3a",
       fontStyle: "italic",
       lineHeight: 1.8,
-      maxWidth: "400px",
+      maxWidth: "480px",
       margin: "0 auto",
     },
     exampleTags: {
@@ -380,10 +380,10 @@ export default function GiftOracle() {
       marginTop: "1.5rem",
     },
     tag: {
-      padding: "0.4rem 0.9rem",
+      padding: "0.5rem 1.1rem",
       border: "1px solid rgba(201,185,122,0.2)",
       borderRadius: "20px",
-      fontSize: "0.78rem",
+      fontSize: "0.94rem",
       color: "#8a7340",
       cursor: "pointer",
       transition: "all 0.2s ease",
@@ -458,7 +458,7 @@ export default function GiftOracle() {
       border: "none",
       outline: "none",
       color: "#d4c48a",
-      fontSize: "0.95rem",
+      fontSize: "1.14rem",
       fontFamily: "'EB Garamond', serif",
       resize: "none",
       minHeight: "24px",
@@ -530,11 +530,11 @@ export default function GiftOracle() {
                   Get the right gift. Every time.
                 </p>
                 <p style={{
-                  fontSize: "0.88rem",
+                  fontSize: "1.06rem",
                   color: "#6a5a3a",
                   fontStyle: "italic",
                   lineHeight: 1.8,
-                  maxWidth: "400px",
+                  maxWidth: "460px",
                   margin: "0.5rem auto 0",
                 }}>
                   Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
@@ -625,7 +625,7 @@ export default function GiftOracle() {
             <div style={{
               textAlign: "center",
               marginTop: "0.6rem",
-              fontSize: "0.72rem",
+              fontSize: "0.86rem",
               color: "#3d2f0a",
               fontStyle: "italic",
             }}>
