@@ -625,8 +625,8 @@ export default function GiftOracle() {
             <div style={{
               textAlign: "center",
               marginTop: "0.6rem",
-              fontSize: "0.86rem",
-              color: "#3d2f0a",
+              fontSize: "1rem",
+              color: "#6a5a3a",
               fontStyle: "italic",
             }}>
               You'll receive thoughtful, appropriate gift suggestions in seconds · Shift+Enter for new line
