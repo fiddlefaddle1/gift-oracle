@@ -256,12 +256,7 @@ export default function GiftOracle() {
 
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: {
-  "Content-Type": "application/json",
-  "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
-  "anthropic-version": "2023-06-01",
-  "anthropic-dangerous-direct-browser-access": "true",
-},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
@@ -305,7 +300,6 @@ export default function GiftOracle() {
   const styles = {
     app: {
       minHeight: "100vh",
-width: "100vw",
       background: "radial-gradient(ellipse at 20% 20%, #1a1206 0%, #0d0a04 40%, #060402 100%)",
       display: "flex",
       flexDirection: "column",
@@ -324,9 +318,7 @@ width: "100vw",
     },
     title: {
       fontFamily: "'Cinzel Decorative', 'Cinzel', serif",
-      fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
-lineHeight: 1.4,
-padding: "0.2rem 0",
+      fontSize: "clamp(1.8rem, 5vw, 3rem)",
       color: "#c9b97a",
       letterSpacing: "0.1em",
       margin: 0,
@@ -535,24 +527,38 @@ padding: "0.2rem 0",
             {messages.length === 0 && (
               <div style={styles.emptyState}>
                 <p style={styles.emptyPrompt}>
-                  Describe who you're gifting for — their relationship to you, their interests, and your budget. The Oracle will consult the etiquette and read what's appropriate.
+                  Get the right gift. Every time.
                 </p>
-                <div style={styles.exampleTags}>
+                <p style={{
+                  fontSize: "0.88rem",
+                  color: "#6a5a3a",
+                  fontStyle: "italic",
+                  lineHeight: 1.8,
+                  maxWidth: "400px",
+                  margin: "0.5rem auto 0",
+                }}>
+                  Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
+                </p>
+                <div style={{ ...styles.exampleTags, marginTop: "1.8rem" }}>
                   {examples.map((ex, i) => (
                     <div
                       key={i}
                       style={styles.tag}
                       onClick={() => setInput(ex)}
                       onMouseEnter={e => {
-                        e.target.style.borderColor = "rgba(201,185,122,0.5)";
-                        e.target.style.color = "#c9b97a";
+                        e.currentTarget.style.borderColor = "rgba(201,185,122,0.6)";
+                        e.currentTarget.style.color = "#c9b97a";
+                        e.currentTarget.style.boxShadow = "0 0 12px rgba(201,185,122,0.2), inset 0 0 8px rgba(201,185,122,0.05)";
+                        e.currentTarget.style.background = "rgba(201,185,122,0.06)";
                       }}
                       onMouseLeave={e => {
-                        e.target.style.borderColor = "rgba(201,185,122,0.2)";
-                        e.target.style.color = "#8a7340";
+                        e.currentTarget.style.borderColor = "rgba(201,185,122,0.2)";
+                        e.currentTarget.style.color = "#8a7340";
+                        e.currentTarget.style.boxShadow = "none";
+                        e.currentTarget.style.background = "transparent";
                       }}
                     >
-                      {ex}
+                      ✦ {ex}
                     </div>
                   ))}
                 </div>
@@ -604,7 +610,7 @@ padding: "0.2rem 0",
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Describe the recipient, your relationship, their interests, and your budget..."
+                placeholder="✦ Ask the Oracle — who are you gifting for?"
                 style={styles.textarea}
                 rows={1}
               />
@@ -623,7 +629,7 @@ padding: "0.2rem 0",
               color: "#3d2f0a",
               fontStyle: "italic",
             }}>
-              Press Enter to consult · Shift+Enter for new line
+              You'll receive thoughtful, appropriate gift suggestions in seconds · Shift+Enter for new line
             </div>
           </div>
         </div>
