@@ -361,8 +361,17 @@ export default function GiftOracle() {
     }
   };
 
-  const handleEmailSubmit = () => {
+ const handleEmailSubmit = async () => {
     if (emailCapture.includes("@")) {
+      try {
+        await fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailCapture }),
+        });
+      } catch (err) {
+        console.error("Email capture failed:", err);
+      }
       setEmailSubmitted(true);
       setShowEmailPrompt(false);
     }
