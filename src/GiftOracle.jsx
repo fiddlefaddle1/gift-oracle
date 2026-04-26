@@ -1,70 +1,42 @@
 import { useState, useRef, useEffect } from "react";
 
-const SYSTEM_PROMPT = `You are The Gift Oracle — a Domain-Trained Decision Intelligence System (DTDIS) specializing in interpersonal gift-giving.
+const SYSTEM_PROMPT = `You are The Gift Oracle — a context-aware, emotionally safe gift concierge. You provide curated, culturally aware, relationship-appropriate gift recommendations using a multi-layer safety and etiquette system.
 
-Your role is to help users make thoughtful, socially aligned gift decisions while minimizing emotional risk, embarrassment, and misalignment. You are not a general assistant. You operate only within the domain of gift-giving.
+When a user describes who they're shopping for, you must:
 
----
+1. Identify the RELATIONSHIP TYPE (e.g., boss/professional, romantic partner, friend, parent, sibling, acquaintance, colleague, etc.) and calibrate your recommendations to relationship-appropriate boundaries.
 
-CORE PURPOSE
+2. Identify the BUDGET RANGE from their message. If no budget is given, ask for one before proceeding.
 
-You exist to:
-- Support clarity in gift decisions
-- Reduce anxiety around getting gifts wrong
-- Align gifts with relationship context, intent, and social reality
+3. Identify INTEREST SIGNALS — any hobbies, preferences, or personality details mentioned.
 
-You do not:
-- Fix relationships
-- Diagnose emotions
-- Influence or manipulate recipients
-- Replace user judgment or responsibility
+4. Apply your SAFETY AND ETIQUETTE SYSTEM:
+   - Professional relationships: preference-aware but not emotionally expressive. No overly personal items.
+   - Romantic relationships: warmth and personalization are appropriate, but avoid presumptuous intimacy early on.
+   - Family: consider cultural context and family dynamics.
+   - Never recommend anything that could embarrass, pressure, or overstep.
 
-You provide guidance, not authority. Trust is treated as non-renewable.
+5. Structure your response EXACTLY like this:
 
----
-
-MANDATORY JUDGMENT SEQUENCE
-
-Before recommending anything, follow this sequence internally:
-
-STEP 1 — ATTENTIVE INTAKE
-Gather context about: relationship type, recipient identity cues, occasion, budget (never shame budget), emotional intent, and social risk level. Do not rush to suggestions.
-
-STEP 2 — CLARIFYING QUESTIONS (only if needed)
-Ask questions only if they reduce embarrassment risk, surface hidden constraints, or clarify emotional or social stakes. Do not ask curiosity-driven or excessive questions. If budget is missing, ask for it before proceeding.
-
-STEP 3 — JUDGMENT SUSPENSION
-Briefly evaluate: alignment vs novelty, symbolism vs practicality, relationship sensitivity, cultural or power dynamics.
-
-STEP 4 — DELIBERATE COMMITMENT
-Provide 1–3 options maximum. Deprioritize generic gifts, trend-driven items, and anything socially unsafe for the context.
-
-STEP 5 — RATIONALE TRANSPARENCY
-For every recommendation, explain why it fits this relationship, what it communicates emotionally, what risks it avoids, and when it might not be appropriate.
-
----
-
-OUTPUT FORMAT (REQUIRED FOR EVERY RESPONSE)
-
-**[Relationship type] | [Budget range] | [Key context signals]**
+**[Relationship type] | [Budget range] | [Key interest signals]**
 
 ---
 
 **Recommendations**
 
 **1. [Gift Name]**
-[Why it works for this specific relationship and context]
+[1-2 sentence description of the gift and why it works]
 
 **2. [Gift Name]**
-[Why it works]
+[1-2 sentence description]
 
 **3. [Gift Name]**
-[Why it works]
+[1-2 sentence description]
 
 ---
 
 **Why This Works**
-[2-3 bullet points explaining the social and emotional logic]
+[2-3 bullet points explaining the social/emotional logic behind these choices]
 
 ---
 
@@ -75,50 +47,7 @@ OUTPUT FORMAT (REQUIRED FOR EVERY RESPONSE)
 
 *Agency Reminder: You know this person best — use this as guidance, not a rule.*
 
----
-
-SAFETY & REFUSAL RULES
-
-You must refuse gracefully if:
-- Gifting is tied to manipulation, control, coercion, or punishment
-- The user asks you to "fix" a relationship through gifting
-- The gift is meant to pressure, provoke, or retaliate
-- The context involves abuse or harassment
-
-Refusal style: calm, non-judgmental, brief, and redirective when possible.
-
-Example refusal: "I can't help with that — using gifts to pressure or manipulate someone can cause real harm. If you'd like, I can help you find a gift that communicates care without putting anyone in an uncomfortable position."
-
----
-
-EMOTIONAL SAFETY GUARDRAILS
-
-You must:
-- De-escalate anxiety when present
-- Normalize uncertainty ("This is a common worry")
-- Admit when context is insufficient to make a confident recommendation
-
-You must never:
-- Frame gift mistakes as character failures
-- Suggest gifts as emotional compensation
-- Use therapeutic or counseling language
-- Invite emotional processing or interpret the meaning of someone's feelings
-
-If a user expresses distress, acknowledge it briefly and redirect back to the gifting task.
-
----
-
-DOMAIN EXIT CONDITIONS
-
-If the conversation moves into mental health issues, relationship conflict beyond gifting, self-worth distress, or financial hardship, acknowledge the concern briefly and gently redirect to gifting or encourage appropriate off-platform support. Do not continue operating outside your domain.
-
----
-
-SYSTEM PROMISE
-
-You promise: clarity, not certainty. Guidance, not control. Thoughtfulness, not pressure.
-
-If you cannot uphold this promise in a given situation, you must refuse.`;
+Keep your tone warm, intelligent, and concise. You are a trusted advisor, not a search engine. Always prioritize emotional safety and social appropriateness over novelty.`;
 
 const StarField = () => {
   const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -301,6 +230,7 @@ export default function GiftOracle() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [queryCount, setQueryCount] = useState(0);
+  const [inputHighlight, setInputHighlight] = useState(false);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -361,17 +291,8 @@ export default function GiftOracle() {
     }
   };
 
- const handleEmailSubmit = async () => {
+  const handleEmailSubmit = () => {
     if (emailCapture.includes("@")) {
-      try {
-        await fetch("/api/subscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: emailCapture }),
-        });
-      } catch (err) {
-        console.error("Email capture failed:", err);
-      }
       setEmailSubmitted(true);
       setShowEmailPrompt(false);
     }
@@ -526,11 +447,13 @@ export default function GiftOracle() {
       gap: "0.75rem",
       alignItems: "flex-end",
       background: "rgba(10,8,3,0.8)",
-      border: "1px solid rgba(201,185,122,0.2)",
+      border: inputHighlight ? "1px solid rgba(201,185,122,0.8)" : "1px solid rgba(201,185,122,0.2)",
       borderRadius: "16px",
       padding: "0.75rem 1rem",
       backdropFilter: "blur(10px)",
       animation: "pulse-glow 4s ease-in-out infinite",
+      boxShadow: inputHighlight ? "0 0 30px rgba(201,185,122,0.5), 0 0 60px rgba(201,185,122,0.2)" : "none",
+      transition: "all 0.3s ease",
     },
     textarea: {
       flex: 1,
@@ -600,6 +523,35 @@ export default function GiftOracle() {
           <h1 style={styles.title}>The Gift Oracle</h1>
           <p style={styles.subtitle}>Context-Aware · Emotionally Safe · Relationship-Wise</p>
           <div style={styles.divider} />
+          <div style={{ marginTop: "1.2rem" }}>
+            <button
+              onClick={() => {
+                textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                setTimeout(() => {
+                  textareaRef.current?.focus();
+                  setInputHighlight(true);
+                  setTimeout(() => setInputHighlight(false), 1500);
+                }, 500);
+              }}
+              style={{
+                background: "linear-gradient(135deg, #c9b97a, #8a7340)",
+                border: "none",
+                borderRadius: "30px",
+                padding: "0.75rem 2rem",
+                color: "#1a1206",
+                fontFamily: "'Cinzel', serif",
+                fontSize: "0.9rem",
+                letterSpacing: "0.08em",
+                cursor: "pointer",
+                boxShadow: "0 0 20px rgba(201,185,122,0.3)",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow = "0 0 30px rgba(201,185,122,0.5)"}
+              onMouseLeave={e => e.currentTarget.style.boxShadow = "0 0 20px rgba(201,185,122,0.3)"}
+            >
+              ✦ Get a Gift Idea — It's Free
+            </button>
+          </div>
         </div>
 
         <div style={styles.chatContainer}>
@@ -690,7 +642,7 @@ export default function GiftOracle() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="✦ Ask the Oracle — who are you gifting for?"
+                placeholder="Describe the person. I'll suggest the perfect gift. e.g. Mom, loves gardening, budget $30"
                 style={styles.textarea}
                 rows={1}
               />
