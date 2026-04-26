@@ -230,7 +230,6 @@ export default function GiftOracle() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [queryCount, setQueryCount] = useState(0);
-  const [inputHighlight, setInputHighlight] = useState(false);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -312,7 +311,7 @@ export default function GiftOracle() {
     },
     header: {
       textAlign: "center",
-      padding: "2rem 2rem 0.5rem",
+      padding: "3rem 2rem 1.5rem",
       position: "relative",
       zIndex: 1,
       animation: "fadeInUp 0.8s ease forwards",
@@ -362,7 +361,7 @@ export default function GiftOracle() {
     },
     emptyState: {
       textAlign: "center",
-      padding: "1rem 2rem",
+      padding: "0.5rem 2rem",
       animation: "fadeInUp 1s ease 0.3s both",
     },
     emptyPrompt: {
@@ -447,13 +446,11 @@ export default function GiftOracle() {
       gap: "0.75rem",
       alignItems: "flex-end",
       background: "rgba(10,8,3,0.8)",
-      border: inputHighlight ? "1px solid rgba(201,185,122,0.8)" : "1px solid rgba(201,185,122,0.2)",
+      border: "1px solid rgba(201,185,122,0.2)",
       borderRadius: "16px",
       padding: "0.75rem 1rem",
       backdropFilter: "blur(10px)",
       animation: "pulse-glow 4s ease-in-out infinite",
-      boxShadow: inputHighlight ? "0 0 30px rgba(201,185,122,0.5), 0 0 60px rgba(201,185,122,0.2)" : "none",
-      transition: "all 0.3s ease",
     },
     textarea: {
       flex: 1,
@@ -523,35 +520,6 @@ export default function GiftOracle() {
           <h1 style={styles.title}>The Gift Oracle</h1>
           <p style={styles.subtitle}>Context-Aware · Emotionally Safe · Relationship-Wise</p>
           <div style={styles.divider} />
-          <div style={{ marginTop: "1.2rem" }}>
-            <button
-              onClick={() => {
-                textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                setTimeout(() => {
-                  textareaRef.current?.focus();
-                  setInputHighlight(true);
-                  setTimeout(() => setInputHighlight(false), 1500);
-                }, 500);
-              }}
-              style={{
-                background: "linear-gradient(135deg, #c9b97a, #8a7340)",
-                border: "none",
-                borderRadius: "30px",
-                padding: "0.75rem 2rem",
-                color: "#1a1206",
-                fontFamily: "'Cinzel', serif",
-                fontSize: "0.9rem",
-                letterSpacing: "0.08em",
-                cursor: "pointer",
-                boxShadow: "0 0 20px rgba(201,185,122,0.3)",
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={e => e.currentTarget.style.boxShadow = "0 0 30px rgba(201,185,122,0.5)"}
-              onMouseLeave={e => e.currentTarget.style.boxShadow = "0 0 20px rgba(201,185,122,0.3)"}
-            >
-              ✦ Get a Gift Idea — It's Free
-            </button>
-          </div>
         </div>
 
         <div style={styles.chatContainer}>
@@ -571,7 +539,7 @@ export default function GiftOracle() {
                 }}>
                   Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
                 </p>
-                <div style={{ ...styles.exampleTags, marginTop: "1.8rem" }}>
+                <div style={{ ...styles.exampleTags, marginTop: "0.8rem" }}>
                   {examples.map((ex, i) => (
                     <div
                       key={i}
@@ -642,7 +610,7 @@ export default function GiftOracle() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Describe the person. I'll suggest the perfect gift. e.g. Mom, loves gardening, budget $30"
+                placeholder="✦ Ask the Oracle — who are you gifting for?"
                 style={styles.textarea}
                 rows={1}
               />
