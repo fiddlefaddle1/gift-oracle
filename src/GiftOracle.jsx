@@ -312,7 +312,7 @@ export default function GiftOracle() {
     },
     header: {
       textAlign: "center",
-      padding: "3rem 2rem 1.5rem",
+      padding: "2rem 2rem 0.5rem",
       position: "relative",
       zIndex: 1,
       animation: "fadeInUp 0.8s ease forwards",
@@ -362,7 +362,7 @@ export default function GiftOracle() {
     },
     emptyState: {
       textAlign: "center",
-      padding: "3rem 2rem",
+      padding: "1rem 2rem",
       animation: "fadeInUp 1s ease 0.3s both",
     },
     emptyPrompt: {
@@ -378,7 +378,7 @@ export default function GiftOracle() {
       flexWrap: "wrap",
       gap: "0.5rem",
       justifyContent: "center",
-      marginTop: "1.5rem",
+      marginTop: "0.8rem",
     },
     tag: {
       padding: "0.4rem 0.9rem",
