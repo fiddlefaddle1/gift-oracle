@@ -230,7 +230,6 @@ export default function GiftOracle() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
   const [queryCount, setQueryCount] = useState(0);
-  const [inputHighlight, setInputHighlight] = useState(false);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -312,7 +311,7 @@ export default function GiftOracle() {
     },
     header: {
       textAlign: "center",
-      padding: "2rem 2rem 0.5rem",
+      padding: "3rem 2rem 1.5rem",
       position: "relative",
       zIndex: 1,
       animation: "fadeInUp 0.8s ease forwards",
@@ -362,7 +361,7 @@ export default function GiftOracle() {
     },
     emptyState: {
       textAlign: "center",
-      padding: "0.5rem 2rem",
+      padding: "3rem 2rem",
       animation: "fadeInUp 1s ease 0.3s both",
     },
     emptyPrompt: {
@@ -378,7 +377,7 @@ export default function GiftOracle() {
       flexWrap: "wrap",
       gap: "0.5rem",
       justifyContent: "center",
-      marginTop: "0.8rem",
+      marginTop: "1.5rem",
     },
     tag: {
       padding: "0.4rem 0.9rem",
@@ -447,13 +446,11 @@ export default function GiftOracle() {
       gap: "0.75rem",
       alignItems: "flex-end",
       background: "rgba(10,8,3,0.8)",
-      border: inputHighlight ? "1px solid rgba(201,185,122,0.8)" : "1px solid rgba(201,185,122,0.2)",
+      border: "1px solid rgba(201,185,122,0.2)",
       borderRadius: "16px",
       padding: "0.75rem 1rem",
       backdropFilter: "blur(10px)",
       animation: "pulse-glow 4s ease-in-out infinite",
-      boxShadow: inputHighlight ? "0 0 30px rgba(201,185,122,0.5), 0 0 60px rgba(201,185,122,0.2)" : "none",
-      transition: "all 0.3s ease",
     },
     textarea: {
       flex: 1,
@@ -523,35 +520,6 @@ export default function GiftOracle() {
           <h1 style={styles.title}>The Gift Oracle</h1>
           <p style={styles.subtitle}>Context-Aware · Emotionally Safe · Relationship-Wise</p>
           <div style={styles.divider} />
-          <div style={{ marginTop: "1.2rem" }}>
-            <button
-              onClick={() => {
-                textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                setTimeout(() => {
-                  textareaRef.current?.focus();
-                  setInputHighlight(true);
-                  setTimeout(() => setInputHighlight(false), 1500);
-                }, 500);
-              }}
-              style={{
-                background: "linear-gradient(135deg, #c9b97a, #8a7340)",
-                border: "none",
-                borderRadius: "30px",
-                padding: "0.75rem 2rem",
-                color: "#1a1206",
-                fontFamily: "'Cinzel', serif",
-                fontSize: "0.9rem",
-                letterSpacing: "0.08em",
-                cursor: "pointer",
-                boxShadow: "0 0 20px rgba(201,185,122,0.3)",
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={e => e.currentTarget.style.boxShadow = "0 0 30px rgba(201,185,122,0.5)"}
-              onMouseLeave={e => e.currentTarget.style.boxShadow = "0 0 20px rgba(201,185,122,0.3)"}
-            >
-              ✦ Get a Gift Idea — It's Free
-            </button>
-          </div>
         </div>
 
         <div style={styles.chatContainer}>
@@ -562,16 +530,16 @@ export default function GiftOracle() {
                   Get the right gift. Every time.
                 </p>
                 <p style={{
-                  fontSize: "1.06rem",
+                  fontSize: "0.88rem",
                   color: "#6a5a3a",
                   fontStyle: "italic",
                   lineHeight: 1.8,
-                  maxWidth: "460px",
+                  maxWidth: "400px",
                   margin: "0.5rem auto 0",
                 }}>
                   Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
                 </p>
-                <div style={{ ...styles.exampleTags, marginTop: "0.8rem" }}>
+                <div style={{ ...styles.exampleTags, marginTop: "1.8rem" }}>
                   {examples.map((ex, i) => (
                     <div
                       key={i}
@@ -593,6 +561,51 @@ export default function GiftOracle() {
                       ✦ {ex}
                     </div>
                   ))}
+                </div>
+
+                <div style={{
+                  marginTop: "2.5rem",
+                  padding: "1.5rem",
+                  border: "1px solid rgba(201,185,122,0.1)",
+                  borderRadius: "16px",
+                  background: "rgba(10,8,3,0.4)",
+                  maxWidth: "500px",
+                  margin: "2rem auto 0",
+                }}>
+                  <p style={{
+                    fontFamily: "'Cinzel', serif",
+                    fontSize: "0.8rem",
+                    color: "#c9b97a",
+                    letterSpacing: "0.1em",
+                    marginBottom: "1rem",
+                    textAlign: "center",
+                  }}>
+                    HOW IT WORKS
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                    {[
+                      "✦ Describe the person — their relationship to you, their interests, their personality",
+                      "✦ Set your budget — no judgment, any amount works",
+                      "✦ Get thoughtful gift ideas instantly — curated, appropriate, and explained",
+                    ].map((step, i) => (
+                      <p key={i} style={{
+                        fontSize: "0.88rem",
+                        color: "#8a7a5a",
+                        lineHeight: 1.6,
+                        margin: 0,
+                        fontStyle: "italic",
+                      }}>{step}</p>
+                    ))}
+                  </div>
+                  <p style={{
+                    fontSize: "0.78rem",
+                    color: "#5a4a2a",
+                    textAlign: "center",
+                    marginTop: "1rem",
+                    fontStyle: "italic",
+                  }}>
+                    The Gift Oracle is an AI-powered tool for personalized gift recommendations — available worldwide 🌍
+                  </p>
                 </div>
               </div>
             )}
@@ -642,7 +655,7 @@ export default function GiftOracle() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Describe the person. I'll suggest the perfect gift. e.g. Mom, loves gardening, budget $30"
+                placeholder="✦ Ask the Oracle — who are you gifting for?"
                 style={styles.textarea}
                 rows={1}
               />
