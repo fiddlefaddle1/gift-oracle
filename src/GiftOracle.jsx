@@ -47,8 +47,8 @@ const StarField = () => {
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(201,185,122,0.3), 0 0 40px rgba(201,185,122,0.1); }
-          50% { box-shadow: 0 0 30px rgba(201,185,122,0.5), 0 0 60px rgba(201,185,122,0.2); }
+          0%, 100% { box-shadow: 0 0 25px rgba(201,185,122,0.4), 0 0 50px rgba(201,185,122,0.15); }
+          50% { box-shadow: 0 0 40px rgba(201,185,122,0.6), 0 0 80px rgba(201,185,122,0.25); }
         }
         @keyframes orb-pulse {
           0%, 100% { transform: scale(1); opacity: 0.6; }
@@ -259,7 +259,7 @@ export default function GiftOracle() {
     },
     header: {
       textAlign: "center",
-      padding: "3rem 2rem 1.5rem",
+      padding: "2.5rem 2rem 1rem",
       position: "relative",
       zIndex: 1,
       animation: "fadeInUp 0.8s ease forwards",
@@ -302,30 +302,81 @@ export default function GiftOracle() {
       position: "relative",
       zIndex: 1,
     },
-    messagesArea: {
-      flex: 1,
-      minHeight: "300px",
-      padding: "1rem 0",
+    prominentInputArea: {
+      padding: "1.5rem 0 1rem",
+      position: "relative",
+      zIndex: 2,
+      animation: "fadeInUp 0.6s ease 0.2s both",
     },
-    emptyState: {
-      textAlign: "center",
-      padding: "3rem 2rem",
-      animation: "fadeInUp 1s ease 0.3s both",
+    prominentInputWrapper: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.75rem",
+      background: "rgba(10,8,3,0.85)",
+      border: "1px solid rgba(201,185,122,0.35)",
+      borderRadius: "20px",
+      padding: "1.25rem 1.5rem",
+      backdropFilter: "blur(12px)",
+      animation: "pulse-glow 4s ease-in-out infinite",
     },
-    emptyPrompt: {
-      fontSize: "1rem",
-      color: "#6a5a3a",
+    prominentTextarea: {
+      background: "transparent",
+      border: "none",
+      outline: "none",
+      color: "#d4c48a",
+      fontSize: "1.1rem",
+      fontFamily: "'EB Garamond', serif",
+      resize: "none",
+      minHeight: "60px",
+      maxHeight: "160px",
+      lineHeight: 1.6,
+      width: "100%",
+    },
+    prominentInputFooter: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "0.75rem",
+    },
+    prominentHint: {
+      fontSize: "0.72rem",
+      color: "#3d2f0a",
       fontStyle: "italic",
-      lineHeight: 1.8,
-      maxWidth: "400px",
-      margin: "0 auto",
     },
-    exampleTags: {
+    prominentSendButton: {
+      background: isLoading
+        ? "rgba(201,185,122,0.1)"
+        : "linear-gradient(135deg, #c9b97a, #8a7340)",
+      border: "none",
+      borderRadius: "12px",
+      padding: "0.6rem 1.4rem",
+      cursor: isLoading ? "not-allowed" : "pointer",
+      display: "flex",
+      alignItems: "center",
+      gap: "0.4rem",
+      transition: "all 0.2s ease",
+      color: isLoading ? "#6a5a3a" : "#1a1206",
+      fontSize: "0.85rem",
+      fontFamily: "'Cinzel', serif",
+      letterSpacing: "0.05em",
+      flexShrink: 0,
+    },
+    exampleTagsRow: {
       display: "flex",
       flexWrap: "wrap",
       gap: "0.5rem",
       justifyContent: "center",
-      marginTop: "1.5rem",
+      padding: "0.5rem 0 0",
+    },
+    messagesArea: {
+      flex: 1,
+      minHeight: "100px",
+      padding: "0.5rem 0 2rem",
+    },
+    emptyState: {
+      textAlign: "center",
+      padding: "1.5rem 1rem 2rem",
+      animation: "fadeInUp 1s ease 0.4s both",
     },
     tag: {
       padding: "0.4rem 0.9rem",
@@ -383,53 +434,6 @@ export default function GiftOracle() {
       fontStyle: "italic",
       fontSize: "0.88rem",
     },
-    inputArea: {
-      padding: "1rem 0 2rem",
-      position: "sticky",
-      bottom: 0,
-      background: "linear-gradient(to top, #060402 60%, transparent)",
-    },
-    inputWrapper: {
-      display: "flex",
-      gap: "0.75rem",
-      alignItems: "flex-end",
-      background: "rgba(10,8,3,0.8)",
-      border: "1px solid rgba(201,185,122,0.2)",
-      borderRadius: "16px",
-      padding: "0.75rem 1rem",
-      backdropFilter: "blur(10px)",
-      animation: "pulse-glow 4s ease-in-out infinite",
-    },
-    textarea: {
-      flex: 1,
-      background: "transparent",
-      border: "none",
-      outline: "none",
-      color: "#d4c48a",
-      fontSize: "0.95rem",
-      fontFamily: "'EB Garamond', serif",
-      resize: "none",
-      minHeight: "24px",
-      maxHeight: "120px",
-      lineHeight: 1.6,
-    },
-    sendButton: {
-      background: isLoading
-        ? "rgba(201,185,122,0.1)"
-        : "linear-gradient(135deg, #c9b97a, #8a7340)",
-      border: "none",
-      borderRadius: "10px",
-      width: "40px",
-      height: "40px",
-      cursor: isLoading ? "not-allowed" : "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexShrink: 0,
-      transition: "all 0.2s ease",
-      color: isLoading ? "#6a5a3a" : "#1a1206",
-      fontSize: "1rem",
-    },
     emailPrompt: {
       position: "fixed",
       bottom: "100px",
@@ -471,54 +475,84 @@ export default function GiftOracle() {
         </div>
 
         <div style={styles.chatContainer}>
+
+          {/* PROMINENT INPUT — always visible near top */}
+          <div style={styles.prominentInputArea}>
+            <div style={styles.prominentInputWrapper}>
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="✦ Who are you gifting for? Describe them — relationship, interests, budget..."
+                style={styles.prominentTextarea}
+                rows={2}
+              />
+              <div style={styles.prominentInputFooter}>
+                <span style={styles.prominentHint}>Shift+Enter for new line</span>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isLoading || !input.trim()}
+                  style={styles.prominentSendButton}
+                >
+                  ✦ Ask the Oracle
+                </button>
+              </div>
+            </div>
+
+            {/* Example chips sit directly below input */}
+            {messages.length === 0 && (
+              <div style={styles.exampleTagsRow}>
+                {examples.map((ex, i) => (
+                  <div
+                    key={i}
+                    style={styles.tag}
+                    onClick={() => {
+                      setInput(ex);
+                      textareaRef.current?.focus();
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = "rgba(201,185,122,0.6)";
+                      e.currentTarget.style.color = "#c9b97a";
+                      e.currentTarget.style.boxShadow = "0 0 12px rgba(201,185,122,0.2), inset 0 0 8px rgba(201,185,122,0.05)";
+                      e.currentTarget.style.background = "rgba(201,185,122,0.06)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = "rgba(201,185,122,0.2)";
+                      e.currentTarget.style.color = "#8a7340";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    ✦ {ex}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* MESSAGES / EMPTY STATE */}
           <div style={styles.messagesArea}>
             {messages.length === 0 && (
               <div style={styles.emptyState}>
-                <p style={styles.emptyPrompt}>
-                  Get the right gift. Every time.
-                </p>
                 <p style={{
-                  fontSize: "0.88rem",
+                  fontSize: "0.95rem",
                   color: "#6a5a3a",
                   fontStyle: "italic",
                   lineHeight: 1.8,
-                  maxWidth: "400px",
-                  margin: "0.5rem auto 0",
+                  maxWidth: "420px",
+                  margin: "0 auto 1.5rem",
                 }}>
                   Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
                 </p>
-                <div style={{ ...styles.exampleTags, marginTop: "1.8rem" }}>
-                  {examples.map((ex, i) => (
-                    <div
-                      key={i}
-                      style={styles.tag}
-                      onClick={() => setInput(ex)}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = "rgba(201,185,122,0.6)";
-                        e.currentTarget.style.color = "#c9b97a";
-                        e.currentTarget.style.boxShadow = "0 0 12px rgba(201,185,122,0.2), inset 0 0 8px rgba(201,185,122,0.05)";
-                        e.currentTarget.style.background = "rgba(201,185,122,0.06)";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = "rgba(201,185,122,0.2)";
-                        e.currentTarget.style.color = "#8a7340";
-                        e.currentTarget.style.boxShadow = "none";
-                        e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      ✦ {ex}
-                    </div>
-                  ))}
-                </div>
 
                 <div style={{
-                  marginTop: "2.5rem",
-                  padding: "1.5rem",
+                  padding: "1.25rem 1.5rem",
                   border: "1px solid rgba(201,185,122,0.1)",
                   borderRadius: "16px",
                   background: "rgba(10,8,3,0.4)",
                   maxWidth: "500px",
-                  margin: "2rem auto 0",
+                  margin: "0 auto",
                 }}>
                   <p style={{
                     fontFamily: "'Cinzel', serif",
@@ -594,36 +628,6 @@ export default function GiftOracle() {
             )}
 
             <div ref={messagesEndRef} />
-          </div>
-
-          <div style={styles.inputArea}>
-            <div style={styles.inputWrapper}>
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="✦ Ask the Oracle — who are you gifting for?"
-                style={styles.textarea}
-                rows={1}
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading || !input.trim()}
-                style={styles.sendButton}
-              >
-                ✦
-              </button>
-            </div>
-            <div style={{
-              textAlign: "center",
-              marginTop: "0.6rem",
-              fontSize: "0.72rem",
-              color: "#3d2f0a",
-              fontStyle: "italic",
-            }}>
-              You'll receive thoughtful, appropriate gift suggestions in seconds · Shift+Enter for new line
-            </div>
           </div>
         </div>
 
