@@ -1,104 +1,44 @@
 import { useState, useRef, useEffect } from "react";
+import "./GiftOracle.css";
 
 const StarField = () => {
+  // Generate stars once, statically — no re-render churn
   const stars = Array.from({ length: 60 }, (_, i) => ({
     id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 0.5,
-    opacity: Math.random() * 0.6 + 0.1,
-    duration: Math.random() * 4 + 3,
-    delay: Math.random() * 5,
+    x: ((i * 137.508) % 100).toFixed(2), // golden ratio spread — deterministic, no Math.random
+    y: ((i * 97.3) % 100).toFixed(2),
+    size: (0.5 + (i % 4) * 0.5).toFixed(1),
+    opacity: (0.1 + (i % 6) * 0.1).toFixed(1),
+    duration: (3 + (i % 4)).toFixed(1),
+    delay: (i % 5).toFixed(1),
   }));
 
   return (
-    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+    <div className="starfield">
       {stars.map((star) => (
         <div
           key={star.id}
+          className="star"
           style={{
-            position: "absolute",
             left: `${star.x}%`,
             top: `${star.y}%`,
             width: `${star.size}px`,
             height: `${star.size}px`,
-            borderRadius: "50%",
-            background: "#c9b97a",
             opacity: star.opacity,
-            animation: `twinkle ${star.duration}s ease-in-out ${star.delay}s infinite alternate`,
+            animationDuration: `${star.duration}s`,
+            animationDelay: `${star.delay}s`,
           }}
         />
       ))}
-      <style>{`
-        @keyframes twinkle {
-          from { opacity: 0.05; transform: scale(0.8); }
-          to { opacity: 0.7; transform: scale(1.2); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
-        @keyframes shimmer {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 25px rgba(201,185,122,0.4), 0 0 50px rgba(201,185,122,0.15); }
-          50% { box-shadow: 0 0 40px rgba(201,185,122,0.6), 0 0 80px rgba(201,185,122,0.25); }
-        }
-        @keyframes orb-pulse {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.05); opacity: 0.9; }
-        }
-        @keyframes typing {
-          0%, 60%, 100% { opacity: 1; }
-          30% { opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 };
 
 const OracleOrb = ({ isThinking }) => (
-  <div style={{
-    width: "80px",
-    height: "80px",
-    position: "relative",
-    animation: "float 4s ease-in-out infinite",
-    flexShrink: 0,
-  }}>
-    <div style={{
-      width: "100%",
-      height: "100%",
-      borderRadius: "50%",
-      background: "radial-gradient(circle at 35% 35%, #e8d9a0, #c9b97a 40%, #8a7340 70%, #3d2f0a)",
-      animation: "orb-pulse 3s ease-in-out infinite",
-      boxShadow: "0 0 30px rgba(201,185,122,0.4), 0 0 60px rgba(201,185,122,0.15), inset 0 0 20px rgba(0,0,0,0.3)",
-    }} />
-    <div style={{
-      position: "absolute",
-      top: "15%",
-      left: "20%",
-      width: "25%",
-      height: "15%",
-      borderRadius: "50%",
-      background: "rgba(255,255,255,0.4)",
-      transform: "rotate(-30deg)",
-      filter: "blur(2px)",
-    }} />
-    {isThinking && (
-      <div style={{
-        position: "absolute",
-        inset: "-8px",
-        borderRadius: "50%",
-        border: "2px solid rgba(201,185,122,0.5)",
-        animation: "orb-pulse 1s ease-in-out infinite",
-      }} />
-    )}
+  <div className={`orb-wrapper${isThinking ? " orb-thinking" : ""}`}>
+    <div className="orb-body" />
+    <div className="orb-highlight" />
+    {isThinking && <div className="orb-ring" />}
   </div>
 );
 
@@ -107,14 +47,7 @@ const formatResponse = (text) => {
   return lines.map((line, i) => {
     if (line.startsWith('**') && line.endsWith('**') && !line.slice(2, -2).includes('**')) {
       return (
-        <div key={i} style={{
-          color: "#c9b97a",
-          fontFamily: "'Cinzel', serif",
-          fontSize: "0.85rem",
-          letterSpacing: "0.05em",
-          marginTop: i === 0 ? 0 : "1.2rem",
-          marginBottom: "0.4rem",
-        }}>
+        <div key={i} className="fmt-heading">
           {line.slice(2, -2)}
         </div>
       );
@@ -124,49 +57,33 @@ const formatResponse = (text) => {
       const boldText = line.slice(2, boldEnd);
       const rest = line.slice(boldEnd + 2);
       return (
-        <div key={i} style={{ marginBottom: "0.3rem", lineHeight: 1.6 }}>
-          <span style={{ color: "#e8d9a0", fontWeight: 600 }}>{boldText}</span>
-          <span style={{ color: "#b8a87a" }}>{rest}</span>
+        <div key={i} className="fmt-bold-line">
+          <span className="fmt-bold">{boldText}</span>
+          <span className="fmt-rest">{rest}</span>
         </div>
       );
     }
     if (line.startsWith('- ') || line.startsWith('• ')) {
       return (
-        <div key={i} style={{
-          display: "flex",
-          gap: "0.5rem",
-          marginBottom: "0.4rem",
-          paddingLeft: "0.5rem",
-          color: "#b8a87a",
-          lineHeight: 1.6,
-        }}>
-          <span style={{ color: "#c9b97a", flexShrink: 0 }}>◆</span>
+        <div key={i} className="fmt-bullet">
+          <span className="fmt-diamond">◆</span>
           <span>{line.slice(2)}</span>
         </div>
       );
     }
     if (line.startsWith('---')) {
-      return <div key={i} style={{
-        height: "1px",
-        background: "linear-gradient(90deg, transparent, rgba(201,185,122,0.3), transparent)",
-        margin: "1rem 0",
-      }} />;
+      return <div key={i} className="fmt-divider" />;
     }
     if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) {
       return (
-        <div key={i} style={{
-          color: "#8a7a5a",
-          fontStyle: "italic",
-          fontSize: "0.85rem",
-          marginTop: "0.8rem",
-        }}>
+        <div key={i} className="fmt-italic">
           {line.slice(1, -1)}
         </div>
       );
     }
-    if (line.trim() === '') return <div key={i} style={{ height: "0.3rem" }} />;
+    if (line.trim() === '') return <div key={i} className="fmt-spacer" />;
     return (
-      <div key={i} style={{ color: "#b8a87a", lineHeight: 1.7, marginBottom: "0.2rem" }}>
+      <div key={i} className="fmt-text">
         {line}
       </div>
     );
@@ -208,9 +125,7 @@ export default function GiftOracle() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: conversationHistory,
-        }),
+        body: JSON.stringify({ messages: conversationHistory }),
       });
 
       const data = await response.json();
@@ -245,213 +160,6 @@ export default function GiftOracle() {
     }
   };
 
-  const styles = {
-    app: {
-      minHeight: "100vh",
-      background: "radial-gradient(ellipse at 20% 20%, #1a1206 0%, #0d0a04 40%, #060402 100%)",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      fontFamily: "'EB Garamond', Georgia, serif",
-      color: "#b8a87a",
-      position: "relative",
-      overflow: "hidden",
-    },
-    header: {
-      textAlign: "center",
-      padding: "2.5rem 2rem 1rem",
-      position: "relative",
-      zIndex: 1,
-      animation: "fadeInUp 0.8s ease forwards",
-    },
-    title: {
-      fontFamily: "'Cinzel Decorative', 'Cinzel', serif",
-      fontSize: "clamp(1.8rem, 5vw, 3rem)",
-      color: "#c9b97a",
-      letterSpacing: "0.1em",
-      margin: 0,
-      background: "linear-gradient(135deg, #c9b97a, #e8d9a0, #8a7340, #c9b97a)",
-      backgroundSize: "200% auto",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      backgroundClip: "text",
-      animation: "shimmer 4s linear infinite",
-    },
-    subtitle: {
-      fontFamily: "'EB Garamond', serif",
-      fontSize: "0.9rem",
-      color: "#6a5a3a",
-      letterSpacing: "0.2em",
-      textTransform: "uppercase",
-      marginTop: "0.5rem",
-      fontStyle: "italic",
-    },
-    divider: {
-      width: "200px",
-      height: "1px",
-      background: "linear-gradient(90deg, transparent, rgba(201,185,122,0.4), transparent)",
-      margin: "1rem auto 0",
-    },
-    chatContainer: {
-      width: "100%",
-      maxWidth: "720px",
-      flex: 1,
-      display: "flex",
-      flexDirection: "column",
-      padding: "0 1.5rem",
-      position: "relative",
-      zIndex: 1,
-    },
-    prominentInputArea: {
-      padding: "1.5rem 0 1rem",
-      position: "relative",
-      zIndex: 2,
-      animation: "fadeInUp 0.6s ease 0.2s both",
-    },
-    prominentInputWrapper: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "0.75rem",
-      background: "rgba(10,8,3,0.85)",
-      border: "1px solid rgba(201,185,122,0.35)",
-      borderRadius: "20px",
-      padding: "1.25rem 1.5rem",
-      backdropFilter: "blur(12px)",
-      animation: "pulse-glow 4s ease-in-out infinite",
-    },
-    prominentTextarea: {
-      background: "transparent",
-      border: "none",
-      outline: "none",
-      color: "#d4c48a",
-      fontSize: "1.1rem",
-      fontFamily: "'EB Garamond', serif",
-      resize: "none",
-      minHeight: "60px",
-      maxHeight: "160px",
-      lineHeight: 1.6,
-      width: "100%",
-    },
-    prominentInputFooter: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: "0.75rem",
-    },
-    prominentHint: {
-      fontSize: "0.72rem",
-      color: "#3d2f0a",
-      fontStyle: "italic",
-    },
-    prominentSendButton: {
-      background: isLoading
-        ? "rgba(201,185,122,0.1)"
-        : "linear-gradient(135deg, #c9b97a, #8a7340)",
-      border: "none",
-      borderRadius: "12px",
-      padding: "0.6rem 1.4rem",
-      cursor: isLoading ? "not-allowed" : "pointer",
-      display: "flex",
-      alignItems: "center",
-      gap: "0.4rem",
-      transition: "all 0.2s ease",
-      color: isLoading ? "#6a5a3a" : "#1a1206",
-      fontSize: "0.85rem",
-      fontFamily: "'Cinzel', serif",
-      letterSpacing: "0.05em",
-      flexShrink: 0,
-    },
-    exampleTagsRow: {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "0.5rem",
-      justifyContent: "center",
-      padding: "0.5rem 0 0",
-    },
-    messagesArea: {
-      flex: 1,
-      minHeight: "100px",
-      padding: "0.5rem 0 2rem",
-    },
-    emptyState: {
-      textAlign: "center",
-      padding: "1.5rem 1rem 2rem",
-      animation: "fadeInUp 1s ease 0.4s both",
-    },
-    tag: {
-      padding: "0.4rem 0.9rem",
-      border: "1px solid rgba(201,185,122,0.2)",
-      borderRadius: "20px",
-      fontSize: "0.78rem",
-      color: "#8a7340",
-      cursor: "pointer",
-      transition: "all 0.2s ease",
-      fontStyle: "italic",
-    },
-    messageWrapper: {
-      marginBottom: "1.5rem",
-      animation: "fadeInUp 0.4s ease forwards",
-    },
-    userMessage: {
-      display: "flex",
-      justifyContent: "flex-end",
-      marginBottom: "1.5rem",
-    },
-    userBubble: {
-      background: "linear-gradient(135deg, rgba(201,185,122,0.15), rgba(201,185,122,0.08))",
-      border: "1px solid rgba(201,185,122,0.25)",
-      borderRadius: "16px 16px 4px 16px",
-      padding: "0.8rem 1.2rem",
-      maxWidth: "75%",
-      color: "#d4c48a",
-      fontSize: "0.95rem",
-      lineHeight: 1.6,
-    },
-    assistantMessage: {
-      display: "flex",
-      gap: "1rem",
-      alignItems: "flex-start",
-      marginBottom: "1.5rem",
-    },
-    assistantBubble: {
-      flex: 1,
-      background: "rgba(10,8,3,0.6)",
-      border: "1px solid rgba(201,185,122,0.15)",
-      borderRadius: "4px 16px 16px 16px",
-      padding: "1.2rem 1.4rem",
-      fontSize: "0.92rem",
-    },
-    thinkingBubble: {
-      flex: 1,
-      background: "rgba(10,8,3,0.6)",
-      border: "1px solid rgba(201,185,122,0.1)",
-      borderRadius: "4px 16px 16px 16px",
-      padding: "1.2rem 1.4rem",
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      color: "#6a5a3a",
-      fontStyle: "italic",
-      fontSize: "0.88rem",
-    },
-    emailPrompt: {
-      position: "fixed",
-      bottom: "100px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      width: "calc(100% - 3rem)",
-      maxWidth: "500px",
-      background: "linear-gradient(135deg, #12100600, #1a1206)",
-      border: "1px solid rgba(201,185,122,0.3)",
-      borderRadius: "16px",
-      padding: "1.5rem",
-      zIndex: 10,
-      backdropFilter: "blur(20px)",
-      boxShadow: "0 0 40px rgba(0,0,0,0.8)",
-      animation: "fadeInUp 0.4s ease forwards",
-    },
-  };
-
   const examples = [
     "Gift for my boss, loves hiking, budget $50",
     "Anniversary gift for my partner of 3 years, $100",
@@ -460,269 +168,145 @@ export default function GiftOracle() {
   ];
 
   return (
-    <>
-      <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
-      <div style={styles.app}>
-        <StarField />
+    <div className="app">
+      <StarField />
 
-        <div style={styles.header}>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
-            <OracleOrb isThinking={isLoading} />
+      <div className="header">
+        <div className="orb-center">
+          <OracleOrb isThinking={isLoading} />
+        </div>
+        <h1 className="title">The Gift Oracle</h1>
+        <p className="subtitle">Context-Aware · Emotionally Safe · Relationship-Wise</p>
+        <div className="header-divider" />
+      </div>
+
+      <div className="chat-container">
+
+        <div className="input-area">
+          <div className={`input-wrapper${isLoading ? " input-loading" : ""}`}>
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="✦ Who are you gifting for? Describe them — relationship, interests, budget..."
+              className="textarea"
+              rows={2}
+            />
+            <div className="input-footer">
+              <span className="input-hint">Shift+Enter for new line</span>
+              <button
+                onClick={handleSubmit}
+                disabled={isLoading || !input.trim()}
+                className={`send-btn${isLoading ? " send-btn-loading" : ""}`}
+              >
+                ✦ Ask the Oracle
+              </button>
+            </div>
           </div>
-          <h1 style={styles.title}>The Gift Oracle</h1>
-          <p style={styles.subtitle}>Context-Aware · Emotionally Safe · Relationship-Wise</p>
-          <div style={styles.divider} />
+
+          {messages.length === 0 && (
+            <div className="example-tags">
+              {examples.map((ex, i) => (
+                <div
+                  key={i}
+                  className="tag"
+                  onClick={() => {
+                    setInput(ex);
+                    textareaRef.current?.focus();
+                  }}
+                >
+                  ✦ {ex}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div style={styles.chatContainer}>
+        <div className="messages-area">
+          {messages.length === 0 && (
+            <div className="empty-state">
+              <p className="empty-tagline">
+                Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
+              </p>
 
-          {/* PROMINENT INPUT — always visible near top */}
-          <div style={styles.prominentInputArea}>
-            <div style={styles.prominentInputWrapper}>
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="✦ Who are you gifting for? Describe them — relationship, interests, budget..."
-                style={styles.prominentTextarea}
-                rows={2}
-              />
-              <div style={styles.prominentInputFooter}>
-                <span style={styles.prominentHint}>Shift+Enter for new line</span>
-                <button
-                  onClick={handleSubmit}
-                  disabled={isLoading || !input.trim()}
-                  style={styles.prominentSendButton}
-                >
-                  ✦ Ask the Oracle
-                </button>
-              </div>
-            </div>
-
-            {/* Example chips sit directly below input */}
-            {messages.length === 0 && (
-              <div style={styles.exampleTagsRow}>
-                {examples.map((ex, i) => (
-                  <div
-                    key={i}
-                    style={styles.tag}
-                    onClick={() => {
-                      setInput(ex);
-                      textareaRef.current?.focus();
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = "rgba(201,185,122,0.6)";
-                      e.currentTarget.style.color = "#c9b97a";
-                      e.currentTarget.style.boxShadow = "0 0 12px rgba(201,185,122,0.2), inset 0 0 8px rgba(201,185,122,0.05)";
-                      e.currentTarget.style.background = "rgba(201,185,122,0.06)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = "rgba(201,185,122,0.2)";
-                      e.currentTarget.style.color = "#8a7340";
-                      e.currentTarget.style.boxShadow = "none";
-                      e.currentTarget.style.background = "transparent";
-                    }}
-                  >
-                    ✦ {ex}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* MESSAGES / EMPTY STATE */}
-          <div style={styles.messagesArea}>
-            {messages.length === 0 && (
-              <div style={styles.emptyState}>
-                <p style={{
-                  fontSize: "0.95rem",
-                  color: "#6a5a3a",
-                  fontStyle: "italic",
-                  lineHeight: 1.8,
-                  maxWidth: "420px",
-                  margin: "0 auto 1.5rem",
-                }}>
-                  Personalized gift ideas based on your relationship, their interests, and your budget — so you never give the wrong gift again.
-                </p>
-
-                <div style={{
-                  padding: "1.25rem 1.5rem",
-                  border: "1px solid rgba(201,185,122,0.1)",
-                  borderRadius: "16px",
-                  background: "rgba(10,8,3,0.4)",
-                  maxWidth: "500px",
-                  margin: "0 auto",
-                }}>
-                  <p style={{
-                    fontFamily: "'Cinzel', serif",
-                    fontSize: "0.8rem",
-                    color: "#c9b97a",
-                    letterSpacing: "0.1em",
-                    marginBottom: "1rem",
-                    textAlign: "center",
-                  }}>
-                    HOW IT WORKS
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                    {[
-                      "✦ Describe the person — their relationship to you, their interests, their personality",
-                      "✦ Set your budget — no judgment, any amount works",
-                      "✦ Get thoughtful gift ideas instantly — curated, appropriate, and explained",
-                    ].map((step, i) => (
-                      <p key={i} style={{
-                        fontSize: "0.88rem",
-                        color: "#8a7a5a",
-                        lineHeight: 1.6,
-                        margin: 0,
-                        fontStyle: "italic",
-                      }}>{step}</p>
-                    ))}
-                  </div>
-                  <p style={{
-                    fontSize: "0.78rem",
-                    color: "#5a4a2a",
-                    textAlign: "center",
-                    marginTop: "1rem",
-                    fontStyle: "italic",
-                  }}>
-                    The Gift Oracle is an AI-powered tool for personalized gift recommendations — available worldwide 🌍
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {messages.map((msg, i) => (
-              <div key={i}>
-                {msg.role === "user" ? (
-                  <div style={styles.userMessage}>
-                    <div style={styles.userBubble}>{msg.content}</div>
-                  </div>
-                ) : (
-                  <div style={styles.assistantMessage}>
-                    <OracleOrb isThinking={false} />
-                    <div style={styles.assistantBubble}>
-                      {formatResponse(msg.content)}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {isLoading && (
-              <div style={styles.assistantMessage}>
-                <OracleOrb isThinking={true} />
-                <div style={styles.thinkingBubble}>
-                  <span>The Oracle is consulting the etiquette...</span>
-                  {[0, 1, 2].map(i => (
-                    <div key={i} style={{
-                      width: "5px",
-                      height: "5px",
-                      borderRadius: "50%",
-                      background: "#c9b97a",
-                      animation: `typing 1.2s ease-in-out ${i * 0.2}s infinite`,
-                    }} />
+              <div className="how-it-works">
+                <p className="how-title">HOW IT WORKS</p>
+                <div className="how-steps">
+                  {[
+                    "✦ Describe the person — their relationship to you, their interests, their personality",
+                    "✦ Set your budget — no judgment, any amount works",
+                    "✦ Get thoughtful gift ideas instantly — curated, appropriate, and explained",
+                  ].map((step, i) => (
+                    <p key={i} className="how-step">{step}</p>
                   ))}
                 </div>
+                <p className="how-footer">
+                  The Gift Oracle is an AI-powered tool for personalized gift recommendations — available worldwide 🌍
+                </p>
               </div>
-            )}
+            </div>
+          )}
 
-            <div ref={messagesEndRef} />
+          {messages.map((msg, i) => (
+            <div key={i}>
+              {msg.role === "user" ? (
+                <div className="user-message">
+                  <div className="user-bubble">{msg.content}</div>
+                </div>
+              ) : (
+                <div className="assistant-message">
+                  <OracleOrb isThinking={false} />
+                  <div className="assistant-bubble">
+                    {formatResponse(msg.content)}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {isLoading && (
+            <div className="assistant-message">
+              <OracleOrb isThinking={true} />
+              <div className="thinking-bubble">
+                <span>The Oracle is consulting the etiquette...</span>
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="typing-dot" style={{ animationDelay: `${i * 0.2}s` }} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {showEmailPrompt && !emailSubmitted && (
+        <div className="email-prompt">
+          <div className="email-title">✦ Enjoying the Oracle?</div>
+          <p className="email-body">
+            Join the list for updates, new features, and early access to premium tiers.
+          </p>
+          <div className="email-row">
+            <input
+              type="email"
+              value={emailCapture}
+              onChange={e => setEmailCapture(e.target.value)}
+              placeholder="your@email.com"
+              className="email-input"
+              onKeyDown={e => e.key === "Enter" && handleEmailSubmit()}
+            />
+            <button onClick={handleEmailSubmit} className="email-submit">Join</button>
+            <button onClick={() => setShowEmailPrompt(false)} className="email-dismiss">✕</button>
           </div>
         </div>
+      )}
 
-        {showEmailPrompt && !emailSubmitted && (
-          <div style={styles.emailPrompt}>
-            <div style={{
-              fontFamily: "'Cinzel', serif",
-              color: "#c9b97a",
-              fontSize: "0.9rem",
-              marginBottom: "0.5rem",
-              letterSpacing: "0.05em",
-            }}>
-              ✦ Enjoying the Oracle?
-            </div>
-            <p style={{
-              fontSize: "0.85rem",
-              color: "#8a7a5a",
-              margin: "0 0 1rem",
-              lineHeight: 1.6,
-            }}>
-              Join the list for updates, new features, and early access to premium tiers.
-            </p>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <input
-                type="email"
-                value={emailCapture}
-                onChange={e => setEmailCapture(e.target.value)}
-                placeholder="your@email.com"
-                style={{
-                  flex: 1,
-                  background: "rgba(201,185,122,0.05)",
-                  border: "1px solid rgba(201,185,122,0.2)",
-                  borderRadius: "8px",
-                  padding: "0.6rem 0.8rem",
-                  color: "#d4c48a",
-                  fontSize: "0.85rem",
-                  fontFamily: "'EB Garamond', serif",
-                  outline: "none",
-                }}
-                onKeyDown={e => e.key === "Enter" && handleEmailSubmit()}
-              />
-              <button
-                onClick={handleEmailSubmit}
-                style={{
-                  background: "linear-gradient(135deg, #c9b97a, #8a7340)",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "0.6rem 1rem",
-                  color: "#1a1206",
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: "0.8rem",
-                  cursor: "pointer",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                Join
-              </button>
-              <button
-                onClick={() => setShowEmailPrompt(false)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#6a5a3a",
-                  cursor: "pointer",
-                  fontSize: "1rem",
-                  padding: "0.4rem",
-                }}
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
-
-        {emailSubmitted && (
-          <div style={{
-            position: "fixed",
-            bottom: "120px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "rgba(201,185,122,0.1)",
-            border: "1px solid rgba(201,185,122,0.3)",
-            borderRadius: "12px",
-            padding: "0.8rem 1.5rem",
-            color: "#c9b97a",
-            fontFamily: "'Cinzel', serif",
-            fontSize: "0.8rem",
-            letterSpacing: "0.05em",
-            zIndex: 10,
-            animation: "fadeInUp 0.3s ease forwards",
-          }}>
-            ✦ The Oracle remembers you.
-          </div>
-        )}
-      </div>
-    </>
+      {emailSubmitted && (
+        <div className="email-confirmed">
+          ✦ The Oracle remembers you.
+        </div>
+      )}
+    </div>
   );
 }
