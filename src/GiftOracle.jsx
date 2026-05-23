@@ -160,12 +160,21 @@ export default function GiftOracle() {
     }
   };
 
-  const examples = [
-    "Gift for my boss, loves hiking, budget $50",
-    "Anniversary gift for my partner of 3 years, $100",
-    "Friend's birthday, obsessed with true crime, $30",
-    "Thank you gift for my therapist, $40",
-  ];
+const handleEmailSubmit = async () => {
+  if (emailCapture.includes("@")) {
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailCapture }),
+      });
+    } catch (err) {
+      console.error("Subscribe error:", err);
+    }
+    setEmailSubmitted(true);
+    setShowEmailPrompt(false);
+  }
+};
 
   return (
     <div className="app">
